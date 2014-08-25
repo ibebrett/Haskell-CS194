@@ -19,4 +19,23 @@ parse :: String -> [LogMessage]
 parse log = map parseMessage $ lines log
 
 insert :: LogMessage -> MessageTree -> MessageTree
-insert lm tree =  
+insert lm Leaf = Node Leaf lm Leaf
+insert (Unknown _) tree = tree
+insert lm@(LogMessage _ lval _) tree@(Node lt tlm@(LogMessage _ tval _) rt)
+    | lval >= tval =  Node lt tlm (insert lm rt)
+    | lval <  tval =  Node (insert lm lt) tlm rt
+
+
+build :: [LogMessage] -> MessageTree
+build [] = Leaf
+build (x:xs) = insert x (build xs)
+inOrder :: MessageTree -> [LogMessage]
+inOrder Leaf = []
+inOrder (Node left val right) = inOrder left ++ [val] ++ inOrder right
+
+whatWentWrong :: [LogMessage] -> [String]
+whatWentWrong messages = [log | x@(LogMessage message val log) <- inOrder (build messages), 
+    case message of 
+        Error n -> n >= 50 
+        _ -> False ]
+
