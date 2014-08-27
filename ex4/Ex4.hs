@@ -12,12 +12,15 @@ data Tree a = Leaf
 
 --foldTree :: [a] -> Tree 
 --minDir Leaf = 0
---insert a Leaf = Node 0 Leaf a Leaf
+--mapTree
+--mapTree Node h left s right  
+--nsert a Leaf = Node 0 Leaf a Leaf
 
 --foldTree :: (x:xs) = insert
 
 xor :: [Bool] -> Bool
 xor = foldr (\x y -> x /= y) False
+
 
 map' :: (a -> b) -> [a] -> [b]
 map' f = foldr (\x y -> [f x] ++ y) []
