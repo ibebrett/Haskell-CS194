@@ -2,9 +2,6 @@ import Data.List.Split
 
 enumerate = zip [0..]
 
---digits :: Integer -> [ (Integer, Integer) ] 
---digits n = [ ( toInteger $ div n (10^i) `mod` 10 , toInteger i) | i <- [0. logBase 10.0 ( fromIntegral n ) ] ]
-
 toDigits n = [ (read n)::Integer | n <- chunksOf 1 $ show n ]
 toDigitsRev n = reverse $ toDigits n
 
