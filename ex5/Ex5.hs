@@ -37,4 +37,15 @@ instance Expr Bool where
         | n <= 0 = False
         | otherwise = True
 
+newtype MinMax = MinMax Integer deriving (Eq, Show)
+newtype Mod7   = Mod7   Integer deriving (Eq, Show)
 
+instance Expr MinMax where
+    add (MinMax a) (MinMax b) = MinMax (max a b)
+    mul (MinMax x) (MinMax y) = MinMax (min x y)
+    lit n   = MinMax n
+
+instance Expr Mod7 where
+    add (Mod7 a) (Mod7 b) = Mod7 ((a + b) `mod` 7)
+    mul (Mod7 x) (Mod7 y) = Mod7 ((x * y) `mod` 7)
+    lit n   = Mod7 (n `mod` 7)
