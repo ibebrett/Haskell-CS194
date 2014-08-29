@@ -31,7 +31,7 @@ nats :: Stream Integer
 nats = streamFromSeed (+1) 0
 
 interleaveStreams :: Stream a -> Stream a -> Stream a
-interleaveStreams (Stream a arest) ~(Stream b brest) = (Stream a (Stream b (interleaveStreams arest brest)))
+interleaveStreams (Stream a arest) streamb = Stream a (interleaveStreams streamb arest)
 
 nthStream :: Integer -> Stream Integer
 
