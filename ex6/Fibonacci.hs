@@ -16,7 +16,7 @@ streamToList :: Stream a -> [a]
 streamToList (Stream a rest) = [a] ++ streamToList rest
 
 instance Show a => Show (Stream a) where
-    show s = show $ take 20 $ streamToList s
+    show s = show $ take 100 $ streamToList s
 
 streamRepeat :: a -> Stream a
 streamRepeat a = Stream a (streamRepeat a)
@@ -31,12 +31,14 @@ nats :: Stream Integer
 nats = streamFromSeed (+1) 0
 
 interleaveStreams :: Stream a -> Stream a -> Stream a
-interleaveStreams (Stream a arest) (Stream b brest) = (Stream a (Stream b (interleaveStreams arest brest)))
+interleaveStreams (Stream a arest) ~(Stream b brest) = (Stream a (Stream b (interleaveStreams arest brest)))
 
---ruler :: Stream Integer
+nthStream :: Integer -> Stream Integer
 
---x :: Stream Integer
+nthStream n = interleaveStreams (streamRepeat n) (nthStream (n+1))
 
+ruler :: Stream Integer
+ruler = nthStream 0 
 instance Num (Stream Integer) where
     (+) (Stream a arest) (Stream b brest) = Stream (a+b) (arest + brest)
     (*) (Stream a arest) (Stream b brest) = (Stream (a*b) (streamRepeat 0)) + (Stream 0  ((streamMap (*a) brest) + (arest*(Stream b brest)) ) )
