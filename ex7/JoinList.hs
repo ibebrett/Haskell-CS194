@@ -26,13 +26,33 @@ indexJ index (Append m a b) = case compare index sizea of
     EQ -> indexJ (index - sizea) b
     where sizea  = (getSize (size (tag a)))
 
---dropJ :: (Sized b, Monoid b) =>
---         Int -> JoinList b a -> JoinList b a
-
 testList :: JoinList Size String
-testList = (Append (Size 2)
-                ( Single (Size 1) "helloworld")
-                ( Single (Size 1) "smile corn")
+testList = (Append (Size 4)
+                ( Append (Size 2) 
+                    (Single (Size 1) "trick joke")
+                    (Single (Size 1) "happy dude")
+                )
+                ( Append (Size 2) 
+                    (Single (Size 1) "smile corn")
+                    (Single (Size 1) "drown duck")
+                )
            )
 
 testIndex1 = indexJ 1 testList
+
+dropJ :: (Sized b, Monoid b) =>
+         Int -> JoinList b a -> JoinList b a
+
+dropJ index Empty = Empty
+dropJ index s@(Single m a) = if index == 0 then s else Empty
+dropJ index (Append m a b) = case compare index sizem of
+    GT -> Empty
+    EQ -> Empty
+    LT -> case compare index sizea of
+        GT -> dropJ (index-sizea) b
+        EQ -> dropJ (index-sizea) b
+        LT -> Append ( (tag (dropJ index a)) <> (tag b)) (dropJ index a) b 
+    where sizea = (getSize (size (tag a)))
+          sizeb = (getSize (size (tag b)))
+          sizem = (getSize (size m))
+
