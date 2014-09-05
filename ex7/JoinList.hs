@@ -56,3 +56,20 @@ dropJ index (Append m a b) = case compare index sizem of
           sizeb = (getSize (size (tag b)))
           sizem = (getSize (size m))
 
+
+takeJ :: (Sized b, Monoid b) =>
+          Int -> JoinList b a -> JoinList b a
+takeJ index Empty = Empty
+takeJ index s@(Single m a) = if index > 0 then s else Empty
+takeJ index whole@(Append m a b) = case compare index sizem of
+    GT -> whole
+    EQ -> whole
+    LT -> case compare index sizea of
+        GT -> Append ( (tag a) <> (tag (dropJ (index-sizea) b)) ) a (dropJ (index-sizea) b)
+        EQ -> takeJ index a
+        LT -> takeJ index a
+    where sizea = (getSize (size (tag a)))
+          sizeb = (getSize (size (tag b)))
+          sizem = (getSize (size m))
+
+
