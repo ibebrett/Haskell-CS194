@@ -1,7 +1,14 @@
+{-# LANGUAGE GeneralizedNewtypeDeriving, FlexibleInstances, TypeSynonymInstances #-}
+
 module JoinList where
 
 import Data.Monoid
+
 import Sized
+import Scrabble
+import StringBuffer
+import Editor
+import Buffer
 
 data JoinList m a = Empty
                   | Single m a
@@ -9,6 +16,7 @@ data JoinList m a = Empty
     deriving (Eq, Show)
 
 tag :: Monoid m => JoinList m a -> m
+tag Empty = mempty
 tag (Single m a) = m
 tag (Append m _ _) = m
 
@@ -72,4 +80,27 @@ takeJ index whole@(Append m a b) = case compare index sizem of
           sizeb = (getSize (size (tag b)))
           sizem = (getSize (size m))
 
+scoreLine :: String -> JoinList Score String
+scoreLine s = Single (scoreString s) s
+
+instance Buffer (JoinList (Score, Size) String) where
+  toString   jl = show jl
+  fromString s  = foldr (+++) Empty (map (\s -> (Single (scoreString s, Size 1) s) ) (lines s)) 
+  line n b      = indexJ n b
+  replaceLine n l b = (takeJ n b) +++ (Single (scoreString l, Size 1) l) +++ (dropJ (n+1) b)
+  numLines      = getSize . size . tag
+  value x       = getSize (size (tag x))
+
+main = runEditor editor $ (Single (scoreString s, Size 1) s)
+        where s = "Brett is cool!"
+
+
+z = (Single (Score 3, Size 1) "hello") +++ 
+    (Single (Score 3, Size 1) "brttt") +++
+    (Single (Score 3, Size 1) "hello") +++ 
+    (Single (Score 3, Size 1) "brttt") +++
+    (Single (Score 3, Size 1) "hello") +++ 
+    (Single (Score 3, Size 1) "brttt") +++
+    (Single (Score 3, Size 1) "hellvo") +++ 
+    (Single (Score 3, Size 1) "brttt") 
 
