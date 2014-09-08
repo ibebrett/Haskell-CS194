@@ -2,6 +2,8 @@ module Party where
 
 import Data.Monoid
 import Data.Tree
+import Data.List
+import Text.Printf
 import Employee
 
 glCons :: Employee -> GuestList -> GuestList
@@ -37,5 +39,12 @@ maxFun :: Tree Employee -> GuestList
 maxFun t = max (fst toplevel) (snd toplevel)
             where toplevel = treeFold nextLevel t
 
+
+getNames :: GuestList -> String
+getNames (GL emps fun) = foldl (\x y -> x++"\n"++y) "" (sort (map empName emps))
+
 main :: IO()
-main = readFile "company.txt" >>= (\l -> putStrLn (show (glFun (maxFun (read l )))))
+main = readFile "company.txt" >>= (\l -> showMaxFun (maxFun (read l)))
+
+showMaxFun :: GuestList -> IO()
+showMaxFun mf = printf "Total fun: %d" (glFun mf) >> putStrLn (getNames mf)
