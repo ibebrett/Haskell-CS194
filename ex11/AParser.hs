@@ -47,9 +47,13 @@ listOf x        = [x]
 listCombine x y = [x] ++ y
 
 zeroOrMore :: Parser a -> Parser [a]
-zeroOrMore p = ( listCombine <$> p <*> zeroOrMore p) <|> pure empty
+zeroOrMore p = listCombine <$> p <*> zeroOrMore p <|> pure empty
 
 oneOrMore :: Parser a -> Parser [a]
 oneOrMore p = listCombine <$> p <*> zeroOrMore p
 
+spaces :: Parser String
+spaces = zeroOrMore (satisfy isSpace)
 
+ident :: Parser String
+ident = listCombine <$> satisfy isAlpha <*> zeroOrMore (satisfy isAlphaNum)
