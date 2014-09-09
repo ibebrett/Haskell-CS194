@@ -65,14 +65,25 @@ instance Functor Parser where
                     Nothing    -> Nothing
                     Just (a,b) -> Just (first f (a,b))
 
-
 instance Applicative Parser where
     pure a = Parser f where 
         f x = Just (a, x)
-    
+
     p1 <*> p2 = Parser f where
         f x = case r1 of 
             Nothing -> Nothing
             Just (a, b) -> runParser (fmap a p2) b
             where 
                 r1 = (runParser p1 x)
+
+abParser :: Parser (Char, Char)
+abParser = (\x y -> (x, y)) <$> char 'a' <*> char 'b'
+
+abParser_ :: Parser ()
+abParser_ = (\x -> ()) <$> abParser
+
+intPair :: Parser [Integer]
+intPair = (\x y z -> [x, z]) <$> posInt <*> char ' ' <*> posInt
+
+
+
