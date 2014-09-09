@@ -85,5 +85,15 @@ abParser_ = (\x -> ()) <$> abParser
 intPair :: Parser [Integer]
 intPair = (\x y z -> [x, z]) <$> posInt <*> char ' ' <*> posInt
 
+instance Alternative Parser where
+    p1 <|> p2 = Parser f where
+        f x = case r1 of
+            Nothing -> (runParser p2 x)
+            otherwise -> r1
+            where 
+                r1 = (runParser p1 x)
 
+    empty = Parser (\x -> Nothing)
 
+intOrUppercase :: Parser ()
+intOrUppercase = (destroy <$> posInt) <|> (destroy <$> (satisfy isUpper)) where destroy = (\f -> ())
