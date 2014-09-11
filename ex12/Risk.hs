@@ -78,10 +78,11 @@ successfulInvasion bf = (defenders bf) == 0
 successProbNth :: Battlefield -> Int -> Int -> Double -> Rand StdGen Double
 successProbNth bf trial numTrials currProb = do
     nth <- invade bf
-    if (trial > numTrials) then return currProb else successProbNth bf (trial+1) numTrials (if successfulInvasion nth then (currProb + 1.0) else currProb)
+    if (trial >= numTrials) then return currProb else successProbNth bf (trial+1) numTrials (if successfulInvasion nth then (currProb + 1.0) else currProb)
 
 successProb :: Battlefield -> Rand StdGen Double
-successProb bf = successProbNth bf 0 1000 0.0
+--successProb bf = do
+--    val <- successProbNth bf 0 1000 0.0
+--    return (val/1000.0)
 
-
-
+successProb bf =  (successProbNth bf 0 1000 0.0) >>=  (\v -> return (v/1000.0) )
